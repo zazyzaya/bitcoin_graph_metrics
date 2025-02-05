@@ -1,0 +1,1 @@
+graph_file = "/mnt/raid10/mark/bitcoin_graph/bitcoin_graph/graph_tx_addr_labeled_st.pt"
