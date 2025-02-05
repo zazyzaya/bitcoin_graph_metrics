@@ -52,14 +52,23 @@ def eval(g, gnn_type, objective):
 
         print("Getting metrics", end='', flush=True)
         name = model.__class__.__name__
-        acc = accuracy_score(y[te_mask], y_hat)
-        bac = balanced_accuracy_score(y[te_mask], y_hat)
-        pr = precision_score(y[te_mask], y_hat)
-        re = recall_score(y[te_mask], y_hat)
-        f1 = f1_score(y[te_mask], y_hat)
         cm = confusion_matrix(y[te_mask], y_hat)
         tps = cm[1,1]; fps = cm[0,1]
         tns = cm[0,0]; fns = cm[1,0]
+        n = tps + fps + tns + fns
+
+        tpr = tps / (tps + fns)
+        tnr = tns / (tns + fps)
+
+        # It's a lot faster to calculate these from the CM
+        # than it is to use the sklearn methods on the raw data
+        # (Saves about a minute of compute time)
+        acc = (tps + tns) / n
+        bac = (tpr + tnr) / 2
+        pr = tps / (tps + fps)
+        re = tps / (tps + fns)
+        f1 = (2 * (pr * re)) / (pr + re)
+
         print(f" ({time.time()-st:0.2f})")
 
         metrics.append({
